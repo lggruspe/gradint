@@ -1,5 +1,5 @@
 # This file is part of the source code of
-# gradint v3.061 (c) 2002-20 Silas S. Brown. GPL v3+.
+# gradint v3.063 (c) 2002-21 Silas S. Brown. GPL v3+.
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation; either version 3 of the License, or
@@ -1666,7 +1666,9 @@ def gui_event_loop():
                 if not getYN("Download failed.  Try again?"): break
               if worked:
                 app.setLabel("Compiling...")
-                if system("""tar -zxvf lame*.tar.gz && cd lame-* && if ./configure && make; then ln -s $(pwd)/frontend/lame ../lame || true; else cd .. ; rm -rf lame*; exit 1; fi"""): app.todo.alert = "Compile failed"
+                if system("""tar -zxvf lame*.tar.gz && cd lame-* && if ./configure && make; then ln -s $(pwd)/frontend/lame ../lame || true; else cd .. ; rm -rf lame*; exit 1; fi"""):
+                    if macsound: app.todo.alert = "Compile failed. Check the system has Xcode with command-line license accepted (try running gcc from the Terminal)" # might be asked to run: sudo xcodebuild -license
+                    else: app.todo.alert = "Compile failed"
           app.todo.set_main_menu = 1
         elif (menu_response=="add" or menu_response=="replace") and not (app.Text1.get() and app.Text2.get()): app.todo.alert="You need to type text in both boxes before adding the word/meaning pair to "+vocabFile
         elif menu_response=="add" and hasattr(app,"vocabList") and checkIn((asUnicode(app.Text1.get()),asUnicode(app.Text2.get())),app.vocabList):
@@ -1838,7 +1840,7 @@ def gui_outputTo_end(openDir=True):
                 # NB we're passing this to cmd, NOT bash:
                 cmd = "cscript \""+pFiles+"\\Windows Media Components\\Encoder\\WMCmd.vbs\" -input \""+o+"\" -output \""+f+"\" -profile a20_1 -a_content 1"
             elif t=="aac": cmd="afconvert \""+o+"\" -d aac \""+f+"\"" # could also use "afconvert file.wav -d samr file.amr", but amr is bigger than aac and not as good; don't know if anyone has a device that plays amr but not aac.
-             # afconvert default is 64kbit AAC. if want 96+ for music, use -b 96000 after the -d aac (and if want iTunes to be able to accept it, specify extension mp4 instead of aac to afconvert; do not rename aac to mp4, but tell afconvert it's mp4)
+            # afconvert default is 64kbit AAC. if want 96+ for music, use -b 96000 after the -d aac (and if want iTunes to be able to accept it, specify extension mp4 instead of aac to afconvert; do not rename aac to mp4, but tell afconvert it's mp4)
             else: assert 0
             if cygwin:
                 assert not "'" in cmd, "apostrophes in pathnames could cause trouble on cygwin"
